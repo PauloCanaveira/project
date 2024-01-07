@@ -1,0 +1,29 @@
+animal_species;animal_breed;animal_sex;W_00;W_04;W_07;W_12;W_24;W_60
+cattle;aberdeen-angus;female;35;149;245;349;489;632
+cattle;alentejana;female;31;109;209;324;480;677
+cattle;arouquesa;female;26;110;188;300;415;450
+cattle;barrosa;female;25;88;146;250;350;418
+cattle;brava de lide;female;20;48;78;90;160;380
+cattle;cachena;female;20;50;105;140;210;275
+cattle;charolesa;female;43;159;271;388;555;725
+cattle;cruzado;female;38;140;220;360;550;600
+cattle;limousine;female;37;162;258;375;550;725
+cattle;maronesa;female;27;80;190;263;320;450
+cattle;mertolenga;female;25;95;150;250;350;380
+cattle;minhota;female;46;121;217;297;400;503
+cattle;mirandesa;female;31;115;191;280;380;500
+cattle;preta;female;33;118;191;330;520;588
+cattle;aberdeen-angus;male;37;152;271;455;812;950
+cattle;alentejana;male;34;115;231;389;650;913
+cattle;arouquesa;male;30;120;215;350;500;700
+cattle;barrosa;male;28;90;149;300;500;701
+cattle;brava de lide;male;21;58;82;100;220;500
+cattle;cachena;male;24;55;115;160;275;400
+cattle;charolesa;male;47;172;282;531;847;1125
+cattle;cruzado;male;40;160;240;420;700;900
+cattle;limousine;male;44;173;286;500;700;1075
+cattle;maronesa;male;28;90;210;355;570;800
+cattle;mertolenga;male;27;100;160;330;650;675
+cattle;minhota;male;48;131;247;364;545;725
+cattle;mirandesa;male;34;140;224;350;470;900
+cattle;preta;male;36;138;225;369;640;945
