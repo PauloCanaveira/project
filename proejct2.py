@@ -3,11 +3,11 @@ import os
 import numpy as np 
 import matplotlib.pyplot as plt
 
-#defines a class cow with variables: species, breed, sex, objetive, lactating, pregnant, castrate
+#defines a class cow with variables: species, breed, sex, objetive
 from cow_class import Cow  
 
 
-my_cow = Cow("cattle","mertolenga","female", "beef", "no", "no", "no")
+my_cow = Cow("cattle","cruzado","female", "milk-high", "extensive")
 
 
 feeding_situations = ["super-intensive", "intensive", "semi-intensive", "extensive", "super-extensive"]
@@ -46,12 +46,13 @@ def main():
     w_current = df["weight_current"].to_numpy()
     w_gain = df["weight_gain"].to_numpy()
 
-    #REVISIT THIS for now assumes same value for all ages
-    castrate = np.full(len(age), "no")
-    feeding_situation = np.full(len(age), "intensive")
+    # Create additional numpy vectors with cow characteristics needed for the calculations
+    feeding_situation = np.full(len(age), my_cow.feeding_situation)
     objective = np.full(len(age), my_cow.objective)
     pregnant = is_pregnant(age)
     lactating = is_lactating(age)
+    # REVISIT THIS for now assumes same value for all ages
+    castrate = np.full(len(age), "no")
 
     # Maintenance
     cf_maintenance = cf_m(age, sex, lactating, castrate)
@@ -70,12 +71,17 @@ def main():
     milk_fat = milk_f(objective, lactating, sex)
     milk_protein = milk_prot(objective, lactating, sex)
     ne_lactation = ne_l(milk_production, milk_fat)
+    # Diet and digestability
     diet = diet_type(age,feeding_situation)
     diet_digestibility = diet_de(diet)
+    # Additional factors for EF calculation
     rem_maintenance = rem(diet_digestibility)
     reg_growth = reg(diet_digestibility)
     y_methane = y_m(diet_digestibility)
+    # Estimate gross energy needed based on previous factors and calculations
     gross_energy = ge(ne_maintenance, ne_activity, ne_growth, ne_lactation, ne_pregnant, rem_maintenance, reg_growth, diet_digestibility)
+    
+    # Emission factor calculation
     ent_ferm_factor = ef_entfer(gross_energy, y_methane)
     print("Production objective", objective)
     print("cf maintenance =", cf_maintenance)
@@ -283,7 +289,7 @@ def y_m(diet_digestibility):
 
 # calculate gross energy ingested from IPCC equation 10.16; unit: MJ/day 
 def ge(ne_maintenance, ne_activity, ne_growth, ne_lactation, ne_pregnant, rem_maintenance, reg_growth, diet_digestibility):
-    gross_energy = np.round(((((ne_maintenance + ne_activity + ne_lactation + ne_pregnant)/rem_maintenance)+(ne_growth/reg_growth))/(diet_digestibility/100)), 3)
+    gross_energy = np.round(((((ne_maintenance + ne_activity + ne_lactation + ne_pregnant)/rem_maintenance) + (ne_growth/reg_growth))/(diet_digestibility/100)), 3)
     return gross_energy
 
 # calculate methane emission factor from IPCC equation 10.21; unit kgCH4/head/day
