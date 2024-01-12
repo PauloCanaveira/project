@@ -1,4 +1,4 @@
-# Calculation of the Methane Emission Factor from Cows
+# Calculation of the Enteric Fermentation Methane Emission Factor from Cows
 
 This code calculates the daily enteric methane emission factor (kgCH<sub>4</sub>/cow/day) from cows using the method, equations and coeficients provided by the:
 
