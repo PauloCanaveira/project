@@ -1,5 +1,5 @@
 class Cow:
-    def __init__(self, species:str = "cattle", breed:str = "cruzado", sex:str = "female", objective:str = "beef-cow", lactating:str = "no", pregnant:str = "no", castrate:str = "no"):
+    def __init__(self, species:str = "cattle", breed:str = "cruzado", sex:str = "female", objective:str = "beef", lactating:str = "no", pregnant:str = "no", castrate:str = "no"):
         self.species = species
         self.breed = breed
         self.sex = sex

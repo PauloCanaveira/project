@@ -1,9 +1,11 @@
 import pandas as pd
 import os
 import numpy as np 
+import matplotlib.pyplot as plt
 
 #defines a class cow with variables: species, breed, sex, objetive, lactating, pregnant, castrate
 from cow_class import Cow  
+
 
 my_cow = Cow("cattle","mertolenga","female", "beef", "no", "no", "no")
 
@@ -28,8 +30,6 @@ if my_cow.objective == "beef":
     lact_duration = 182
 else:
     lact_duration = 305
-
-
 
 def main():
     
@@ -72,6 +72,11 @@ def main():
     ne_lactation = ne_l(milk_production, milk_fat)
     diet = diet_type(age,feeding_situation)
     diet_digestibility = diet_de(diet)
+    rem_maintenance = rem(diet_digestibility)
+    reg_growth = reg(diet_digestibility)
+    y_methane = y_m(diet_digestibility)
+    gross_energy = ge(ne_maintenance, ne_activity, ne_growth, ne_lactation, ne_pregnant, rem_maintenance, reg_growth, diet_digestibility)
+    ent_ferm_factor = ef_entfer(gross_energy, y_methane)
     print("Production objective", objective)
     print("cf maintenance =", cf_maintenance)
     print("NE maintenance =", ne_maintenance)
@@ -87,10 +92,35 @@ def main():
     print("NE lactation =", ne_lactation)
     print("Diet =", diet)
     print("Digestibility of diet", diet_digestibility)
+    print("Ratio Energy Maintenance", rem_maintenance)
+    print("Ratio Energy Growth", reg_growth)
+    print("Methane conversion factor", y_methane)
+    print("Gross Energy", gross_energy)
+    print("Enteric fermentation CH4 emission =", ent_ferm_factor)
+
+    # create a line plot with emission factor
+    plt.plot(age, ent_ferm_factor, label = "Enteric fermentation methane emission")
+    plt.xlabel("Age of animal (days)")
+    plt.ylabel("Methane emission (kgCH4/day)")
+    plt.title("Enteric fermentation methane emission")
+    plt.legend()
+    plt.show()
+
+    # create a stacked line plot with net energies
+    plt.plot(age, ne_maintenance, label = "Net-energy for maintenance")
+    plt.plot(age, ne_activity, label = "Net-energy for activity")
+    plt.plot(age, ne_growth, label = "Net-energy for growth")
+    plt.plot(age, ne_pregnant, label = "Net-energy for pregnancy")
+    plt.plot(age, ne_lactation, label = "Net-energy for lactation")
+    plt.xlabel("Age of Animal (days)")
+    plt.ylabel("Net-energy (MJ/day)")
+    plt.title("Net-energy needed for different purposes")
+    plt.legend()
+    plt.show() 
     
 # calculate net-energy needed for animal maintenance from IPCC equation 10.3; unit: MJ/day
 def ne_m(cf_m, w_current):
-    ne_m = np.round(cf_m * np.power(w_current,0.75), decimals=3)
+    ne_m = np.round((cf_m * np.power(w_current,0.75)), 3)
     return ne_m
 # assign maintenance coeficient to "category" from IPCC defaults table 10.4; unit MJ/day/kg
 def cf_m(age, sex, lactating, castrate):
@@ -233,6 +263,34 @@ def diet_de(diet):
     # create a NumPy array using the values from the dictionary
     de_array = np.array([de_diet_situation[x] for x in diet])
     return de_array
+
+# calculate ratio of net-energy available in a diet for maintenance to digestible energy from IPCC equation 10.14; unit: dimensionless
+def rem(diet_digestibility):
+    rem = np.round((1.123 - (0.004092 * diet_digestibility) + (0.00001126 * (diet_digestibility**2)) - (25.4 / diet_digestibility)), 5)
+    return rem
+
+# calculate ratio of net-energy available for growth in a diet to digestible energy from IPCC equation 10.15; unit: dimensionless
+def reg(diet_digestibility):
+    reg = np.round((1.164 - (0.00516 * diet_digestibility) + (0.00001308 * (diet_digestibility**2)) - (37.4 / diet_digestibility)), 5)
+    return reg
+
+# assign methane conversion factor from IPCC defaults Table 10.12; unit: % 0-100
+def y_m(diet_digestibility):
+    y_m_conditions = [(diet_digestibility <= 62), (diet_digestibility > 62) & (diet_digestibility <= 72), (diet_digestibility > 72)]
+    y_m_defaults = [7.0, 6.3, 4.0]
+    y_m_array = np.select(y_m_conditions, y_m_defaults)
+    return y_m_array
+
+# calculate gross energy ingested from IPCC equation 10.16; unit: MJ/day 
+def ge(ne_maintenance, ne_activity, ne_growth, ne_lactation, ne_pregnant, rem_maintenance, reg_growth, diet_digestibility):
+    gross_energy = np.round(((((ne_maintenance + ne_activity + ne_lactation + ne_pregnant)/rem_maintenance)+(ne_growth/reg_growth))/(diet_digestibility/100)), 3)
+    return gross_energy
+
+# calculate methane emission factor from IPCC equation 10.21; unit kgCH4/head/day
+def ef_entfer(gross_energy, y_methane):
+    ef_entfer_array = np.round(((gross_energy * (y_methane/100)) / 55.65), 3)
+    return ef_entfer_array
+
 
 if __name__ == "__main__":
     main()
