@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from cow_class import Cow  
 
 
-my_cow = Cow("cattle","cruzado","female", "milk-high", "extensive")
+my_cow = Cow("cattle","brava de lide","female", "beef", "extensive")
 
 
 feeding_situations = ["super-intensive", "intensive", "semi-intensive", "extensive", "super-extensive"]
