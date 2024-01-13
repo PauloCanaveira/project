@@ -3,11 +3,11 @@ import os
 import numpy as np 
 import matplotlib.pyplot as plt
 
-#defines a class cow with variables: species, breed, sex, objetive
+# defines a class cow with variables: species, breed, sex, objetive
 from cow_class import Cow  
 
-
-my_cow = Cow("cattle","brava de lide","female", "beef", "extensive")
+# defines the instance of "Cow" for which the Emission Factor will be calculated
+my_cow = Cow("cattle","brava de lide","male", "beef", "extensive")
 
 
 feeding_situations = ["super-intensive", "intensive", "semi-intensive", "extensive", "super-extensive"]
@@ -33,20 +33,20 @@ else:
 
 def main():
     
-    #define the subfolder that contains both the input file and will contain the output files
-    # Read CSV File containing the daily weights of specific cow breed / sex combination
+    # define the subfolder that contains the input weight file
+    # read CSV file containing the daily weights of specific cow breed / sex combination
     subfolder_weight_name = "weight_data"
     csv_weight_path = os.path.join(subfolder_weight_name, f"{my_cow.breed}_{my_cow.sex}.csv")
     df = pd.read_csv(csv_weight_path, header = 0)
 
-    # Extract a Specific Column as a Pandas Series and converting to a numpy array
+    # extract a specific Column as a Pandas Series and converting to a numpy array
     age = df["cow_age"].to_numpy()
     sex = df["cow_sex"].to_numpy()
     w_mature = df["weight_mature"].to_numpy()
     w_current = df["weight_current"].to_numpy()
     w_gain = df["weight_gain"].to_numpy()
 
-    # Create additional numpy vectors with cow characteristics needed for the calculations
+    # create additional numpy vectors with cow characteristics needed for the calculations
     feeding_situation = np.full(len(age), my_cow.feeding_situation)
     objective = np.full(len(age), my_cow.objective)
     pregnant = is_pregnant(age)
@@ -54,35 +54,60 @@ def main():
     # REVISIT THIS for now assumes same value for all ages
     castrate = np.full(len(age), "no")
 
-    # Maintenance
+    # maintenance
     cf_maintenance = cf_m(age, sex, lactating, castrate)
     ne_maintenance = ne_m(cf_maintenance, w_current)
-    # Growth
+    # growth
     cf_growth = cf_g(sex, castrate)
     ne_growth = ne_g(w_mature, w_current, w_gain, cf_growth)
-    # Activity
+    # activity
     cf_activity = cf_a(feeding_situation)
     ne_activity = ne_a(ne_maintenance,cf_activity)
-    # Pregnancy
+    # pregnancy
     cf_pregnant = cf_p(pregnant, sex)
     ne_pregnant = ne_p(cf_pregnant,ne_maintenance)
-    # Lactation
+    # lactation
     milk_production = milk_p(objective, lactating, sex)
     milk_fat = milk_f(objective, lactating, sex)
     milk_protein = milk_prot(objective, lactating, sex)
     ne_lactation = ne_l(milk_production, milk_fat)
-    # Diet and digestability
+    # diet and digestability
     diet = diet_type(age,feeding_situation)
     diet_digestibility = diet_de(diet)
-    # Additional factors for EF calculation
+    # additional factors for EF calculation
     rem_maintenance = rem(diet_digestibility)
     reg_growth = reg(diet_digestibility)
     y_methane = y_m(diet_digestibility)
-    # Estimate gross energy needed based on previous factors and calculations
+    # estimate gross energy needed based on previous factors and calculations
     gross_energy = ge(ne_maintenance, ne_activity, ne_growth, ne_lactation, ne_pregnant, rem_maintenance, reg_growth, diet_digestibility)
     
-    # Emission factor calculation
+    # emission factor calculation
     ent_ferm_factor = ef_entfer(gross_energy, y_methane)
+
+    # save the results for my_cow in a csv file  
+    # Create a pandas DataFrame containing the results for all varibles/vectors that supported the calculation
+    df = pd.DataFrame({"age": age, "sex": sex,
+                       "weight_current": w_current, "weight_gain": w_gain, "weight_mature": w_mature,
+                       "cf_maintenance": cf_maintenance, "ne_maintenance": ne_maintenance, 
+                       "cf_growth": cf_growth, "ne_growth": ne_growth, 
+                       "feeding_situation": feeding_situation, "cf_activity": cf_activity, "ne_activity": ne_activity,
+                       "is_pregnant": pregnant, "cf_pregnant": cf_pregnant, "ne_pregnant": ne_pregnant,
+                       "is_lactating": lactating, "milk_production": milk_production, "milk_fat": milk_fat, "milk protein": milk_protein, "ne_lactation": ne_lactation,
+                       "Diet": diet, "Digestibility_diet": diet_digestibility,
+                       "REM": rem_maintenance, "REG": reg_growth, 
+                       "Ym": y_methane, "gross_energy": gross_energy,
+                       'EF_CH4_Ent_Ferm': ent_ferm_factor})
+    # Specify the subfolder and CSV file name
+    subfolder = "output_data"
+    csv_output_name = f"EF_{my_cow.breed}_{my_cow.sex}_{my_cow.objective}_{my_cow.feeding_situation}.csv"
+    # Create the subfolder if it doesn't exist
+    if not os.path.exists(subfolder):
+        os.makedirs(subfolder)
+    # Create the full CSV file path
+    csv_file_path = os.path.join(subfolder, csv_output_name)
+    # Write the DataFrame to the CSV file
+    df.to_csv(csv_file_path, index=False)
+
     print("Production objective", objective)
     print("cf maintenance =", cf_maintenance)
     print("NE maintenance =", ne_maintenance)
@@ -126,6 +151,7 @@ def main():
     
 # calculate net-energy needed for animal maintenance from IPCC equation 10.3; unit: MJ/day
 def ne_m(cf_m, w_current):
+
     ne_m = np.round((cf_m * np.power(w_current,0.75)), 3)
     return ne_m
 # assign maintenance coeficient to "category" from IPCC defaults table 10.4; unit MJ/day/kg
@@ -296,7 +322,6 @@ def ge(ne_maintenance, ne_activity, ne_growth, ne_lactation, ne_pregnant, rem_ma
 def ef_entfer(gross_energy, y_methane):
     ef_entfer_array = np.round(((gross_energy * (y_methane/100)) / 55.65), 3)
     return ef_entfer_array
-
 
 if __name__ == "__main__":
     main()
