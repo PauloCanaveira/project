@@ -24,7 +24,7 @@ my_cow = (species:str = "cattle", breed:str = "cruzado", sex:str = "female", obj
 - objective: describes the production  objective of the animal (meat or milk production). For milk production defines 3 levels of production. Allows one value from the list ["beef", "milk-low", "milk-medium", "milk-high"]. Default value is "beef", the most objective in Portuguese herds.
 - feeding_situation: describes the amount of "effort" an animal has to endure to feed itself (animal can be stalled, or grazing in good or bad pastures). Allows one value from the list ["super-intensive", "intensive", "semi-intensive", "extensive", "super-extensive"]. Default value is "extensive", the most feeding situation in Portuguese herds.
 
-[^2] The IPCC also provides equations and methods for other species, namely sheep and goats. For now this code only allows the estimation of emissions from cattle
+[^2]: The IPCC also provides equations and methods for other species, namely sheep and goats. For now this code only allows the estimation of emissions from cattle
 
 > [!NOTE]
 > Failure to "define" my_cow using these parameters will raise a ValueError. 
