@@ -21,13 +21,13 @@ my_cow = (species:str = "cattle", breed:str = "cruzado", sex:str = "female", obj
 - species: describes the species of the animal. Only allows the value "cattle" [^2]
 - breed: describes the breed of the animal. Allows one value from the list ["aberdeen-angus", "alentejana", "arouquesa","barrosa", "brava de lide", "cachena", "charolesa", "cruzado", "limousine", "maronesa", "mertolenga", "minhota", "mirandesa", "preta"]. Default value is "cruzado", the most common breed in Portugal
 - sex: describes the sex of the animal. Allows one value from the list ["male", "female]. Default value is "female", the most common sex in Portuguese herds.
-- objective: describes the production  objective of the animal (meat or milk production). For milk production defines 3 levels of production. Allows one value from the list ["beef", "milk-low", "milk-medium", "milk-high"]. Default value is "beef", the most objective in Portuguese herds.
-- feeding_situation: describes the amount of "effort" an animal has to endure to feed itself (animal can be stalled, or grazing in good or bad pastures). Allows one value from the list ["super-intensive", "intensive", "semi-intensive", "extensive", "super-extensive"]. Default value is "extensive", the most feeding situation in Portuguese herds.
+- objective: describes the production  objective of the animal (meat or milk production). For milk production defines 3 levels of production. Allows one value from the list ["beef", "milk-low", "milk-medium", "milk-high"]. Default value is "beef", the most common production objective in Portuguese herds.
+- feeding_situation: describes the amount of "effort" an animal has to endure to feed itself (animal can be stalled, or grazing in good or bad pastures). Allows one value from the list ["super-intensive", "intensive", "semi-intensive", "extensive", "super-extensive"]. Default value is "extensive", the most common feeding situation in Portuguese herds.
 
 [^2]: The IPCC also provides equations and methods for other species, namely sheep and goats. For now this code only allows the estimation of emissions from cattle
 
 > [!NOTE]
-> Failure to "define" my_cow using these parameters will raise a ValueError. 
+> Failure to "define" my_cow using these parameters will raise a **ValueError**. 
 
 > [!CAUTION]
 > Changing these lists will require adaptations in the functions using this information as input.
