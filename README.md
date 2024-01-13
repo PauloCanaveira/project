@@ -39,4 +39,4 @@ The folder weight_data contains csv files for the first 7300 days (20 years) for
 
 > [!NOTE]
 > Information is only available for male/female of the following breeds: aberdeen-angus, alentejana, arouquesa, barrosa, brava de lide, cachena, charolesa, cruzado, limousine, maronesa, mertolenga, minhota", mirandesa, preta
-> Different breeds or different growth rates for these breeds will creating new breed_sex.csv files
+> Different breeds or different growth rates for these breeds will require creating new breed_sex.csv files
