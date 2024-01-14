@@ -35,7 +35,7 @@ my_cow = (species:str = "cattle", breed:str = "cruzado", sex:str = "female", obj
 ## Reference Cow Weights
 
 Animal birth size, growth rate and final weight is dependent on the cow's breed and sex.
-The most common cow breeds found in Portugal have been caractherised by the Portuguese Environment Agency.
+The most common cow breeds found in Portugal have been characterised by the Portuguese Environment Agency.
 Each breed/sex is characterised by its weight at:
 - W_00: weight at birth
 - W_04: weight at 4 months
