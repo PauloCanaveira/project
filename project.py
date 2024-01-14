@@ -6,10 +6,11 @@ import matplotlib.pyplot as plt
 # defines a class cow with variables: species, breed, sex, objetive
 from cow_class import Cow  
 
-# defines the instance of "Cow" for which the Emission Factor will be calculated
-my_cow = Cow("cattle","brava de lide","male", "beef", "extensive")
-
-
+# defines some management pre-defined options that will be needed in calculations
+breeds = ["aberdeen-angus", "alentejana", "arouquesa", 
+              "barrosa", "brava de lide", "cachena", "charolesa", 
+              "cruzado", "limousine", "maronesa", "mertolenga", "minhota", "mirandesa", "preta"]
+sexes = ["male", "male-castrated", "female"]
 feeding_situations = ["super-intensive", "intensive", "semi-intensive", "extensive", "super-extensive"]
 objectives = ["beef", "milk-low", "milk-medium", "milk-high"]
 diet_types = ["milk", "pasture good quality", "pasture bad quality", "straw", "hay", "sillage", "concentrates"]
@@ -21,18 +22,17 @@ preg_start = 547
 preg_duration = 283
 # period between pregnancies in days (14 months)
 preg_between = 427
-
 # age period where calf drinks milk only in days (12 weeks)
 age_milk = 84
 
-# duration of the lactation period in days
-if my_cow.objective == "beef":
-    lact_duration = 182
-else:
-    lact_duration = 305
-
 def main():
-    
+    # defines the instance of "Cow" for which the Emission Factor will be calculated
+    user_breed = input(f"please provide the animal breed from whithin this list: {breeds}: ").lower().replace(" ", "")
+    user_sex = input(f"please provide the animal sex from whithin this list: {sexes}: ").lower().replace(" ", "")
+    user_objective = input(f"please provide the production objective for the animal from whithin this list: {objectives}: ").lower().replace(" ", "")
+    user_feeding_situation = input(f"please provide the feeding situation for the animal from whithin this list: {feeding_situations}: ").lower().replace(" ", "")
+    my_cow = Cow("cattle",user_breed,user_sex, user_objective, user_feeding_situation)
+
     # define the subfolder that contains the input weight file
     # read CSV file containing the daily weights of specific cow breed / sex combination
     subfolder_weight_name = "weight_data"
@@ -42,17 +42,24 @@ def main():
     # extract a specific Column as a Pandas Series and converting to a numpy array
     age = df["cow_age"].to_numpy()
     sex = df["cow_sex"].to_numpy()
-    w_mature = df["weight_mature"].to_numpy()
-    w_current = df["weight_current"].to_numpy()
-    w_gain = df["weight_gain"].to_numpy()
+    w_mature = df["weight_mature"].round(decimals=0).to_numpy()
+    w_current = df["weight_current"].round(decimals=2).to_numpy()
+    w_gain = df["weight_gain"].round(decimals=4).to_numpy()
 
     # create additional numpy vectors with cow characteristics needed for the calculations
     feeding_situation = np.full(len(age), my_cow.feeding_situation)
     objective = np.full(len(age), my_cow.objective)
     pregnant = is_pregnant(age)
-    lactating = is_lactating(age)
-    # REVISIT THIS for now assumes same value for all ages
-    castrate = np.full(len(age), "no")
+    # duration of the lactation period in days
+    if my_cow.objective == "beef":
+        lact_duration = 182
+    else:
+        lact_duration = 305
+    lactating = is_lactating(age, lact_duration)
+    if my_cow.sex == "male-castrated":
+        castrate = np.full(len(age), "yes")
+    else:
+        castrate = np.full(len(age), "no")    
 
     # maintenance
     cf_maintenance = cf_m(age, sex, lactating, castrate)
@@ -86,7 +93,7 @@ def main():
 
     # save the results for my_cow in a csv file  
     # Create a pandas DataFrame containing the results for all varibles/vectors that supported the calculation
-    df = pd.DataFrame({"age": age, "sex": sex,
+    df = pd.DataFrame({"age": age, "sex": sex, "castrate": castrate,
                        "weight_current": w_current, "weight_gain": w_gain, "weight_mature": w_mature,
                        "cf_maintenance": cf_maintenance, "ne_maintenance": ne_maintenance, 
                        "cf_growth": cf_growth, "ne_growth": ne_growth, 
@@ -227,23 +234,23 @@ def ne_l(milk_production, milk_fat):
     ne_l = milk_production * (1.47 + 0.4 * milk_fat)
     return ne_l
 # determine if the cow is lactating or not at a specific age
-def is_lactating(age):
+def is_lactating(age, lact_duration):
     lactating_periods = []
-    start = preg_start + preg_duration
+    start = preg_start + preg_duration + 1
     a = 1
     while a <= len(age):
         end = start + lact_duration
         lactating_periods.append([start, end])
         start += preg_between
-        a = end+1
+        a = end + 1
     lactating = np.full(len(age), "no", dtype='<U3')
     for start, end in lactating_periods:
         lactating[start-1:end] = "yes"
     return lactating
 # assigns milk production in kg/day according to production objective and milk productivity
-# assuming 5500kg per lactation over 305 days
-# assuming 5500kg per lactation over 305 days
-# assuming 11000kg per lactation over 305 days
+# low: assuming 5500kg per lactation over 305 days
+# medium: assuming 7900kg per lactation over 305 days
+# high: assuming 11000kg per lactation over 305 days
 def milk_p(objective, lactating, sex):
     milk_p_array = np.where((objective == "beef") & (sex == "female") & (lactating == "yes"), 3,
                     np.where((objective == "milk-low") & (sex == "female") & (lactating == "yes"), 18, 
