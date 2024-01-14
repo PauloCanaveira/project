@@ -100,13 +100,13 @@ def main():
                        "feeding_situation": feeding_situation, "cf_activity": cf_activity, "ne_activity": ne_activity,
                        "is_pregnant": pregnant, "cf_pregnant": cf_pregnant, "ne_pregnant": ne_pregnant,
                        "is_lactating": lactating, "milk_production": milk_production, "milk_fat": milk_fat, "milk protein": milk_protein, "ne_lactation": ne_lactation,
-                       "Diet": diet, "Digestibility_diet": diet_digestibility,
+                       "diet": diet, "digestibility_diet": diet_digestibility,
                        "REM": rem_maintenance, "REG": reg_growth, 
                        "Ym": y_methane, "gross_energy": gross_energy,
-                       'EF_CH4_Ent_Ferm': ent_ferm_factor})
+                       'EF_CH4_ent_ferm': ent_ferm_factor})
     # Specify the subfolder and CSV file name
     subfolder = "output_data"
-    csv_output_name = f"EF_{my_cow.breed}_{my_cow.sex}_{my_cow.objective}_{my_cow.feeding_situation}.csv"
+    csv_output_name = f"{my_cow.breed}_{my_cow.sex}_{my_cow.objective}_{my_cow.feeding_situation}_EF.csv"
     # Create the subfolder if it doesn't exist
     if not os.path.exists(subfolder):
         os.makedirs(subfolder)
@@ -115,25 +115,6 @@ def main():
     # Write the DataFrame to the CSV file
     df.to_csv(csv_file_path, index=False)
 
-    print("Production objective", objective)
-    print("cf maintenance =", cf_maintenance)
-    print("NE maintenance =", ne_maintenance)
-    print("cf growth =", cf_growth)
-    print("NE growth =", ne_growth)
-    print("cf actvity =", cf_activity)
-    print("NE activity =", ne_activity)
-    print("cf pregnancy =", cf_pregnant)
-    print("NE pregnancy =", ne_pregnant)
-    print("daily milk production = ", milk_production)
-    print("milk fat =", milk_fat)
-    print("milk protein", milk_protein)
-    print("NE lactation =", ne_lactation)
-    print("Diet =", diet)
-    print("Digestibility of diet", diet_digestibility)
-    print("Ratio Energy Maintenance", rem_maintenance)
-    print("Ratio Energy Growth", reg_growth)
-    print("Methane conversion factor", y_methane)
-    print("Gross Energy", gross_energy)
     print("Enteric fermentation CH4 emission =", ent_ferm_factor)
 
     # create a line plot with emission factor
@@ -142,7 +123,9 @@ def main():
     plt.ylabel("Methane emission (kgCH4/day)")
     plt.title("Enteric fermentation methane emission")
     plt.legend()
-    plt.show()
+    subfolder = "output_data"
+    graph_name = f"{my_cow.breed}_{my_cow.sex}_{my_cow.objective}_{my_cow.feeding_situation}_EF_ent_ferm.png"
+    plt.savefig(os.path.join(subfolder, graph_name), format='png')
 
     # create a stacked line plot with net energies
     plt.plot(age, ne_maintenance, label = "Net-energy for maintenance")
@@ -154,7 +137,9 @@ def main():
     plt.ylabel("Net-energy (MJ/day)")
     plt.title("Net-energy needed for different purposes")
     plt.legend()
-    plt.show() 
+    subfolder = "output_data"
+    graph_name = f"{my_cow.breed}_{my_cow.sex}_{my_cow.objective}_{my_cow.feeding_situation}_Net_energy.png"
+    plt.savefig(os.path.join(subfolder, graph_name), format='png')
     
 # calculate net-energy needed for animal maintenance from IPCC equation 10.3; unit: MJ/day
 def ne_m(cf_m, w_current):
