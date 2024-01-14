@@ -162,7 +162,7 @@ def ne_g(w_mature, w_current, w_gain, cf_growth):
 def cf_g(sex, castrate):
     # IPCC available categories = ["females", "castrates", "bulls"]
     cf_g_array = np.where((sex == "female"), 0.8, 
-        np.where((sex == "male") & (castrate == "yes"), 1, 
+        np.where((sex == "male-castrate") & (castrate == "yes"), 1, 
          1.2))
     return cf_g_array
 
@@ -239,7 +239,7 @@ def is_lactating(age, lact_duration):
 def milk_p(objective, lactating, sex):
     milk_p_array = np.where((objective == "beef") & (sex == "female") & (lactating == "yes"), 3,
                     np.where((objective == "milk-low") & (sex == "female") & (lactating == "yes"), 18, 
-                    np.where((objective == "milk-medium") & (sex == "female") & (lactating == "yes"), 26,
+                    np.where((objective == "milk-medium") & (sex == "female") & (lactating == "yes"), 26.2,
                     np.where((objective == "milk-high") & (sex == "female") & (lactating == "yes"), 36, 0))))
     return milk_p_array
 # assigns milk fat content in percent [0-100] according to production objective and milk productivity
