@@ -8,7 +8,7 @@ from cow_class import Cow
 
 # defines some management pre-defined options that will be needed in calculations
 breeds = ["aberdeen-angus", "alentejana", "arouquesa", 
-              "barrosa", "brava de lide", "cachena", "charolesa", 
+              "barrosa", "brava-de-lide", "cachena", "charolesa", 
               "cruzado", "limousine", "maronesa", "mertolenga", "minhota", "mirandesa", "preta"]
 sexes = ["male", "male-castrated", "female"]
 feeding_situations = ["super-intensive", "intensive", "semi-intensive", "extensive", "super-extensive"]

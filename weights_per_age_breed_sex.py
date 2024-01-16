@@ -4,8 +4,8 @@ import os
 #define the subfolder that contains both the input file and will contain the output files
 subfolder_name = "weight_data"
 
-cow_breeds = ["aberdeen-angus", "alentejana", "arouquesa", "barrosa", "brava de lide", "cachena", "charolesa", "cruzado", "limousine", "maronesa", "mertolenga", "minhota", "mirandesa", "preta"]
-cow_sexes = ["female", "male"]
+cow_breeds = ["aberdeen-angus", "alentejana", "arouquesa", "barrosa", "brava-de-lide", "cachena", "charolesa", "cruzado", "limousine", "maronesa", "mertolenga", "minhota", "mirandesa", "preta"]
+cow_sexes = ["male", "male-castrated", "female"]
 ages = list(range(1,7301))
 
 

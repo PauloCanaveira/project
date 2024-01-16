@@ -1,7 +1,7 @@
 class Cow:
     allowed_species = ["cattle"]
     allowed_breeds = ["aberdeen-angus", "alentejana", "arouquesa", 
-              "barrosa", "brava de lide", "cachena", "charolesa", 
+              "barrosa", "brava-de-lide", "cachena", "charolesa", 
               "cruzado", "limousine", "maronesa", "mertolenga", "minhota", "mirandesa", "preta"]
     allowed_sexes = ["male", "male-castrated", "female"]
     allowed_objectives = ["beef", "milk-low", "milk-medium", "milk-high"]
